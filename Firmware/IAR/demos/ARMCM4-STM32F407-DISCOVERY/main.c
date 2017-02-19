@@ -345,7 +345,7 @@ int read_config_file()
     
   }
   
-  gptStartContinuous(&GPTD4, sample_time*100);
+  gptStartContinuous(&GPTD4, sample_time*10);
   
   fclose_(file);
     
@@ -452,7 +452,9 @@ palSetPad(GPIOB, GPIOB_PIN13_LED_R);
     
     strcat(sLine, "\r\n");
 
+    chSysLockFromIsr();
     fwrite_string(sLine);
+    chSysUnlockFromIsr();
     
 palClearPad(GPIOB, GPIOB_PIN13_LED_R);
   }
@@ -460,7 +462,7 @@ palClearPad(GPIOB, GPIOB_PIN13_LED_R);
 
 static GPTConfig gpt_writer_config = 
 { 
-     100000,  // timer clock: 1Mhz 
+     10000,  // timer clock: 1Mhz 
      gpt_writer_cb  // Timer callback function 
 };
 //------------------------------------------------------------------------------
@@ -501,7 +503,7 @@ int main(void)
 INDICATE_IDLE_ON();
     
     // maybe we need to write log, because we didnt for long time?
-    if (chTimeElapsedSince(stLastWriting) > S2ST(2))
+    if (chTimeElapsedSince(stLastWriting) > S2ST(5))
     {
       if (sd_buffer_length > 0) // there is data to write
       {
