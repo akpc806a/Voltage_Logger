@@ -386,7 +386,19 @@ static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n)
   (void)adcp;
   if (samples == buffer) 
   {
-    palTogglePad(GPIOB, GPIOB_PIN15_LED_G);
+    palSetPad(GPIOB, GPIOB_PIN15_LED_G);
+    
+    chSysLockFromIsr();
+    for (i = 0; i < ADC_NUM_CHANNELS; i++) 
+    {
+      if (channel_en[i])
+      {    
+        channel_data[i] = channel_data[i]*((channel_fltorder[i] - 1)/channel_fltorder[i]) + samples[i]/channel_fltorder[i];
+      }
+    }
+    chSysUnlockFromIsr();
+    
+    palClearPad(GPIOB, GPIOB_PIN15_LED_G);
   }
 }
 
@@ -440,11 +452,12 @@ palSetPad(GPIOB, GPIOB_PIN13_LED_R);
     {
       if (channel_en[i])
       {
-        data = (samples[i]-channel_zero[i])*channel_gain[i];
+        //data = (samples[i]-channel_zero[i])*channel_gain[i];
         
-        channel_data[i] = channel_data[i]*((channel_fltorder[i] - 1)/channel_fltorder[i]) + data/channel_fltorder[i];
+        //channel_data[i] = channel_data[i]*((channel_fltorder[i] - 1)/channel_fltorder[i]) + data/channel_fltorder[i];
+        data = (channel_data[i]-channel_zero[i])*channel_gain[i];
         
-        sprintf(sTmp, format_str, channel_data[i]);
+        sprintf(sTmp, format_str, data);
         strcat(sLine, ",");
         strcat(sLine, sTmp);
       }
@@ -486,6 +499,11 @@ int main(void)
   palSetPad(GPIOB, GPIOB_PIN15_LED_G);
  
   gptStart(&GPTD4, &gpt_writer_config); 
+  
+  for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_en[i] = 0; // all channels disabled by default
+  for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_zero[i] = 0;
+  for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_gain[i] = 1;
+  for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_fltorder[i] = 1;
   
    /*
    * Initializes the ADC driver 1 and enable the thermal sensor.
