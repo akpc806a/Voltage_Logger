@@ -386,7 +386,7 @@ static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n)
   (void)adcp;
   if (samples == buffer) 
   {
-    palSetPad(GPIOB, GPIOB_PIN15_LED_G);
+    //palSetPad(GPIOB, GPIOB_PIN15_LED_G);
     
     chSysLockFromIsr();
     for (i = 0; i < ADC_NUM_CHANNELS; i++) 
@@ -398,7 +398,7 @@ static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n)
     }
     chSysUnlockFromIsr();
     
-    palClearPad(GPIOB, GPIOB_PIN15_LED_G);
+    //palClearPad(GPIOB, GPIOB_PIN15_LED_G);
   }
 }
 
@@ -440,7 +440,8 @@ void gpt_writer_cb (GPTDriver *gpt_ptr)
   
   if (bLogging)
   {
-palSetPad(GPIOB, GPIOB_PIN13_LED_R);
+//palSetPad(GPIOB, GPIOB_PIN13_LED_R);
+    palTogglePad(GPIOB, GPIOB_PIN15_LED_G);
     
     // write down data
     sLine[0] = 0;
@@ -469,7 +470,7 @@ palSetPad(GPIOB, GPIOB_PIN13_LED_R);
     fwrite_string(sLine);
     chSysUnlockFromIsr();
     
-palClearPad(GPIOB, GPIOB_PIN13_LED_R);
+//palClearPad(GPIOB, GPIOB_PIN13_LED_R);
   }
 }
 
