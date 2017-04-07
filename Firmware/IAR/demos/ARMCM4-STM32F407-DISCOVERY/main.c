@@ -43,6 +43,7 @@ unsigned char bLogging = 0; // if =1 than we logging to SD card
 #define ADC_BUF_DEPTH      1
 
 static adcsample_t samples[ADC_NUM_CHANNELS * ADC_BUF_DEPTH];
+static adcsample_t samples_reindexed[ADC_NUM_CHANNELS]; // samples from ADC but reindexed for PCB routing correction
 
 static uint8_t channel_en[ADC_NUM_CHANNELS];
 
@@ -386,19 +387,28 @@ static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n)
   (void)adcp;
   if (samples == buffer) 
   {
-    //palSetPad(GPIOB, GPIOB_PIN15_LED_G);
+//palSetPad(GPIOB, GPIOB_PIN15_LED_G);
+    
+    samples_reindexed[0] = samples[0];
+    samples_reindexed[1] = samples[1];
+    samples_reindexed[2] = samples[2];
+    samples_reindexed[3] = samples[3];
+    samples_reindexed[4] = samples[6];
+    samples_reindexed[5] = samples[7];
+    samples_reindexed[6] = samples[4];
+    samples_reindexed[7] = samples[5];
     
     chSysLockFromIsr();
     for (i = 0; i < ADC_NUM_CHANNELS; i++) 
     {
       if (channel_en[i])
       {    
-        channel_data[i] = channel_data[i]*((channel_fltorder[i] - 1)/channel_fltorder[i]) + samples[i]/channel_fltorder[i];
+        channel_data[i] = channel_data[i]*((channel_fltorder[i] - 1)/channel_fltorder[i]) + samples_reindexed[i]/channel_fltorder[i];
       }
     }
     chSysUnlockFromIsr();
     
-    //palClearPad(GPIOB, GPIOB_PIN15_LED_G);
+//palClearPad(GPIOB, GPIOB_PIN15_LED_G);
   }
 }
 
@@ -504,7 +514,7 @@ int main(void)
   for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_en[i] = 0; // all channels disabled by default
   for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_zero[i] = 0;
   for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_gain[i] = 1;
-  for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_fltorder[i] = 1;
+  for (i = 0; i < ADC_NUM_CHANNELS; i++) channel_fltorder[i] = 4;
   
    /*
    * Initializes the ADC driver 1 and enable the thermal sensor.

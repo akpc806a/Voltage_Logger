@@ -155,8 +155,8 @@
 <board>
 <plain>
 <wire x1="-0.905" y1="-5.3975" x2="47.3535" y2="-5.3975" width="0" layer="20"/>
-<wire x1="47.3535" y1="-5.3975" x2="47.3535" y2="21.675" width="0" layer="20"/>
-<wire x1="47.3535" y1="21.675" x2="-0.905" y2="21.6115" width="0" layer="20"/>
+<wire x1="47.3535" y1="-5.3975" x2="47.3535" y2="21.6115" width="0" layer="20"/>
+<wire x1="47.3535" y1="21.6115" x2="-0.905" y2="21.6115" width="0" layer="20"/>
 <wire x1="-0.905" y1="21.6115" x2="-0.905" y2="-5.3975" width="0" layer="20"/>
 </plain>
 <libraries>
@@ -3291,7 +3291,7 @@ W = angled&lt;p&gt;
 <polygon width="0.254" layer="16">
 <vertex x="-0.762" y="-5.207"/>
 <vertex x="-0.762" y="21.463"/>
-<vertex x="47.117" y="21.59"/>
+<vertex x="47.1805" y="21.463"/>
 <vertex x="47.117" y="-5.207"/>
 </polygon>
 <contactref element="R21" pad="2"/>
